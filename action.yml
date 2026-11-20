@@ -1,0 +1,21 @@
+name: 'load-secrets-action'
+description: 'Resolves 1Password secrets from a JSON map of env var name to op:// reference.'
+author: 'rafalmasiarek'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Export op:// refs
+      shell: bash
+      run: |
+        set -euo pipefail
+        echo "${SECRETS_MAP}" | jq -r 'to_entries[] | "\(.key)=\(.value)"' >> "$GITHUB_ENV"
+
+    - name: Load secrets from 1Password
+      uses: 1password/load-secrets-action@v5
+      with:
+        export-env: true
+
+branding:
+  icon: 'lock'
+  color: 'blue'
